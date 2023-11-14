@@ -1,0 +1,2 @@
+langchain==0.0.335
+gradio==3.50.2

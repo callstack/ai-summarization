@@ -31,6 +31,9 @@ STYLES = {
     },
 }
 
+LANGUAGES = ["English", "Polish", "Portuguese",
+             "Spanish", "Czech", "Turkish", "French", "German", ]
+
 # Model params
 MODEL_FILE = "./models/mistral-7b-openorca.Q5_K_M.gguf"
 MODEL_CONTEXT_WINDOW = 8192
@@ -59,18 +62,18 @@ Write a summary of the following text delimited by tripple backquotes.
 
 ```{content}```
 
-{trigger}:
+{trigger} in {language}:
 """
 
 map_prompt_template = """
 Write a concise summary of the following:
 {text}
 
-CONCISE SUMMARY:
+CONCISE SUMMARY in {language}:
 """
 
 
-def summarize_base(llm, content, style):
+def summarize_base(llm, content, style, language):
     """Summarize whole content at once. The content needs to fit into model's context window."""
 
     prompt = PromptTemplate.from_template(
@@ -78,6 +81,7 @@ def summarize_base(llm, content, style):
     ).partial(
         style=STYLES[style]["style"],
         trigger=STYLES[style]["trigger"],
+        language=language,
     )
 
     chain = LLMChain(llm=llm, prompt=prompt, verbose=VERBOSE)
@@ -86,7 +90,7 @@ def summarize_base(llm, content, style):
     return output
 
 
-def summarize_map_reduce(llm, content, style):
+def summarize_map_reduce(llm, content, style, language):
     """Summarize content potentially larger that model's context window using map-reduce approach."""
 
     text_splitter = RecursiveCharacterTextSplitter(
@@ -98,12 +102,17 @@ def summarize_map_reduce(llm, content, style):
     print(
         f"Map-Reduce content splits ({len(split_docs)} splits): {[len(sd.page_content) for sd in split_docs]}")
 
-    map_prompt = PromptTemplate.from_template(map_prompt_template)
+    map_prompt = PromptTemplate.from_template(
+        map_prompt_template
+    ).parial(
+        language=language,
+    )
     combine_prompt = PromptTemplate.from_template(
         combine_prompt_template
     ).partial(
         style=STYLES[style]["style"],
         trigger=STYLES[style]["trigger"],
+        language=language,
     )
 
     chain = load_summarize_chain(
@@ -142,7 +151,7 @@ def load_input_file(input_file):
     return docs[0].page_content
 
 
-def summarize_text(content, style, progress=gr.Progress()):
+def summarize_text(content, style, language, progress=gr.Progress()):
     content_tokens = llm.get_num_tokens(content)
 
     print("Content length:", len(content))
@@ -152,8 +161,8 @@ def summarize_text(content, style, progress=gr.Progress()):
     info = f"Content length: {len(content)} chars, {content_tokens} tokens."
     progress(None, desc=info)
 
-    # Keep part of context window for models output.
-    base_threshold = MODEL_CONTEXT_WINDOW
+    # Keep part of context window for models output & some buffor for the promopt.
+    base_threshold = MODEL_CONTEXT_WINDOW - MAX_TOKENS - 256
 
     start_time = time.perf_counter()
 
@@ -163,14 +172,14 @@ def summarize_text(content, style, progress=gr.Progress()):
         progress(None, desc=info)
 
         print("Using summarizer: base")
-        summary = summarize_base(llm, content, style)
+        summary = summarize_base(llm, content, style, language)
     else:
         info += "\n"
         info += "Using summarizer: map-reduce"
         progress(None, desc=info)
 
         print("Using summarizer: map-reduce")
-        summary = summarize_map_reduce(llm, content, style)
+        summary = summarize_map_reduce(llm, content, style, language)
 
     end_time = time.perf_counter()
 
@@ -197,7 +206,7 @@ with gr.Blocks() as ui:
 
     input_file = gr.File(
         label="Drop a file here",
-        file_types=["text"],
+        file_types=["text", "pdf"],
     )
 
     input_text = gr.Textbox(
@@ -212,6 +221,12 @@ with gr.Blocks() as ui:
             choices=[s for s in STYLES.keys()],
             value=list(STYLES.keys())[0],
             label="Response style"
+        )
+
+        language_dropdown = gr.Dropdown(
+            choices=LANGUAGES,
+            value=LANGUAGES[0],
+            label="Language",
         )
 
     start_button = gr.Button("Generate Summary", variant="primary")
@@ -246,7 +261,7 @@ with gr.Blocks() as ui:
 
     start_button.click(
         summarize_text,
-        inputs=[input_text, style_radio],
+        inputs=[input_text, style_radio, language_dropdown],
         outputs=[output_text, info_text],
     )
 

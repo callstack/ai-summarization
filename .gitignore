@@ -3,5 +3,5 @@
 .ipynb_checkpoints
 
 # Model and input files
-model/
+models/
 inputs/
