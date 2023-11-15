@@ -25,7 +25,7 @@ Install following dependencies (on macOS):
 
 - Python 3 installation - e.g. [Miniconda](https://docs.conda.io/projects/miniconda/en/latest/) or [Homebrew package](https://formulae.brew.sh/formula/python@3.10).
 - Python packages - `pip3 install -r requirements.txt`
-- Download `mistral-7b-openorca.Q5_K_M.gguf` model from Hugging Face [TheBloke/Mistral-7B-OpenOrca-GGUF](https://huggingface.co/TheBloke/Mistral-7B-OpenOrca-GGUF/tree/main) repo into local `model` directory.
+- Download `mistral-7b-openorca.Q5_K_M.gguf` model from Hugging Face [TheBloke/Mistral-7B-OpenOrca-GGUF](https://huggingface.co/TheBloke/Mistral-7B-OpenOrca-GGUF/tree/main) repo into local `models` directory.
 
 Note you can experiment with anternatives models, just update the `MODEL_FILE` and `MODEL_CONTEXT_WINDOW` variables in `web-ui.py` and/or `Notebook.ipynb`.
 
