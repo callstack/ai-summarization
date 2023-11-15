@@ -5,3 +5,6 @@
 # Model and input files
 models/
 inputs/
+
+# Other
+.DS_Store
