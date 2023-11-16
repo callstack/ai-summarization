@@ -20,7 +20,7 @@ Note you can experiment with anternatives models, just update the `MODEL_FILE` a
 
 ### Web UI
 
-In order to run Web UI just run `python3 ./web-ui.sh` in the repo folder. This should open Web UI interface in the browser.
+In order to run Web UI just run `python3 ./web-ui.py` in the repo folder. This should open Web UI interface in the browser.
 
 ### Jupyter Notebook
 
