@@ -226,7 +226,7 @@ with gr.Blocks() as ui:
         language_dropdown = gr.Dropdown(
             choices=LANGUAGES,
             value=LANGUAGES[0],
-            label="Language",
+            label="Response language",
         )
 
     start_button = gr.Button("Generate Summary", variant="primary")
