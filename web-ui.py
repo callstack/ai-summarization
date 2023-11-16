@@ -36,7 +36,7 @@ LANGUAGES = ["Default", "English", "Polish", "Portuguese",
 
 # Model params
 MODEL_FILE = "./models/mistral-7b-openorca.Q5_K_M.gguf"
-MODEL_CONTEXT_WINDOW = 16384
+MODEL_CONTEXT_WINDOW = 8192
 
 # Chunk params in characters (not tokens)
 CHUNK_SIZE = 10000
