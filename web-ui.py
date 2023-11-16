@@ -31,12 +31,12 @@ STYLES = {
     },
 }
 
-LANGUAGES = ["English", "Polish", "Portuguese",
+LANGUAGES = ["Default", "English", "Polish", "Portuguese",
              "Spanish", "Czech", "Turkish", "French", "German", ]
 
 # Model params
 MODEL_FILE = "./models/mistral-7b-openorca.Q5_K_M.gguf"
-MODEL_CONTEXT_WINDOW = 8192
+MODEL_CONTEXT_WINDOW = 16384
 
 # Chunk params in characters (not tokens)
 CHUNK_SIZE = 10000
@@ -62,14 +62,14 @@ Write a summary of the following text delimited by tripple backquotes.
 
 ```{content}```
 
-{trigger} in {language}:
+{trigger}{in_language}:
 """
 
 map_prompt_template = """
 Write a concise summary of the following:
 {text}
 
-CONCISE SUMMARY in {language}:
+CONCISE SUMMARY{in_language}:
 """
 
 
@@ -81,7 +81,7 @@ def summarize_base(llm, content, style, language):
     ).partial(
         style=STYLES[style]["style"],
         trigger=STYLES[style]["trigger"],
-        language=language,
+        in_language=f"in {language}" if language != "Default" else "",
     )
 
     chain = LLMChain(llm=llm, prompt=prompt, verbose=VERBOSE)
@@ -112,7 +112,7 @@ def summarize_map_reduce(llm, content, style, language):
     ).partial(
         style=STYLES[style]["style"],
         trigger=STYLES[style]["trigger"],
-        language=language,
+        in_language=f"in {language}" if language != "Default" else "",
     )
 
     chain = load_summarize_chain(
