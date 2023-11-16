@@ -1,3 +1,4 @@
 langchain==0.0.335
 gradio==3.50.2
 llama-cpp-python==0.2.18
+pypdf=3.17.1

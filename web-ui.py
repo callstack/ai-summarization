@@ -45,14 +45,14 @@ CHUNK_OVERLAP = 500
 llm = LlamaCpp(
     model_path=MODEL_FILE,
     n_ctx=MODEL_CONTEXT_WINDOW,
-    # Number of tokens to process in parallel. Should be a number between 1 and n_ctx.
-    n_batch=512,
-    # Number of layers to be loaded into gpu memory. Default None.
-    n_gpu_layers=1,
     # Don't be creative.
     temperature=0,
     max_tokens=MAX_TOKENS,
     verbose=VERBOSE,
+
+    # Remove next two lines if NOT using macOS & M1 processor:
+    n_batch=512,
+    n_gpu_layers=1,
 )
 
 
