@@ -14,8 +14,8 @@ MAX_TOKENS = 2048
 
 STYLES = {
     "List": {
-        "style": "Return your response as numbered list which covers the main points of the text.",
-        "trigger": "NUMBERED LIST SUMMARY",
+        "style": "Return your response as numbered list which covers the main points of the text and key facts and figures.",
+        "trigger": "NUMBERED LIST SUMMARY WITH KEY POINTS AND FACTS",
     },
     "One sentence": {
         "style": "Return your response as one sentence which covers the main points of the text.",
@@ -62,14 +62,14 @@ Write a summary of the following text delimited by tripple backquotes.
 
 ```{content}```
 
-{trigger}{in_language}:
+{trigger} {in_language}:
 """
 
 map_prompt_template = """
-Write a concise summary of the following:
+Write a concise summary of the following text which covers the main points and key facts and figures:
 {text}
 
-CONCISE SUMMARY{in_language}:
+CONCISE SUMMARY {in_language}:
 """
 
 
@@ -105,7 +105,7 @@ def summarize_map_reduce(llm, content, style, language):
     map_prompt = PromptTemplate.from_template(
         map_prompt_template
     ).partial(
-        language=language,
+        in_language=f"in {language}" if language != "Default" else "",
     )
     combine_prompt = PromptTemplate.from_template(
         combine_prompt_template
