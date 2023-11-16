@@ -104,7 +104,7 @@ def summarize_map_reduce(llm, content, style, language):
 
     map_prompt = PromptTemplate.from_template(
         map_prompt_template
-    ).parial(
+    ).partial(
         language=language,
     )
     combine_prompt = PromptTemplate.from_template(
